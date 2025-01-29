@@ -4,7 +4,7 @@ import math
 # ELO Configuration
 DEFAULT_ELO = 1500  # Start all fighters at 1500
 K_FACTOR = 40  # Fixed K-Factor for all fights
-FINISH_MULTIPLIER = 1.2  # 1.2× for KO/TKO and Sub wins
+FINISH_MULTIPLIER = 1.5  # 1.2× for KO/TKO and Sub wins
 
 # Load fight data and sort from oldest to newest
 fights_df = pd.read_csv("ufcfights.csv")
