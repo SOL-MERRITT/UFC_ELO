@@ -100,7 +100,7 @@ pip install requests beautifulsoup4 pandas matplotlib datetime
 
 ## **📜 To-Do & Future Improvements**
 - [ ] **Track different weight classes separately**  
-- [ ] **Improve fight data accuracy & filtering**  
+- [ ] **Improve chart formatting**  
 
 ---
 
