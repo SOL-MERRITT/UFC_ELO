@@ -1,16 +1,16 @@
 import pandas as pd
 import math
 
-# ELO Configuration
+# --- ELO Configuration ---
 DEFAULT_ELO = 1500
 K_FACTOR = 40
 FINISH_MULTIPLIER = 1.25
 
-# Load and prepare data
-fights_df = pd.read_csv("ufcfights.csv")
-fights_df = fights_df.sort_index(ascending=False)
+# --- Load and Prepare Data ---
+fights_df = pd.read_csv("ufc_fights.csv", parse_dates=["event_date"], dayfirst=False)  #Ensure event_date is parsed correctly
+fights_df = fights_df.sort_values(by="event_date", ascending=True)  #Ensure fights are processed in chronological order
 
-# Clean results and methods
+# --- Clean Results and Methods ---
 fights_df["result"] = fights_df["result"].str.replace(r"\n+", "", regex=True).str.strip().str.lower()
 fights_df["result"] = fights_df["result"].apply(
     lambda x: "win" if "win" in x else "draw" if "draw" in x else "nc" if "nc" in x else x
@@ -21,7 +21,7 @@ fights_df["method"] = fights_df["method"].apply(
     lambda x: "KO/TKO" if "KO/TKO" in x else ("SUB" if "SUB" in x else x)
 )
 
-# ELO storage
+# --- ELO Storage ---
 fighter_ratings = {}
 peak_elo_ratings = {}
 
@@ -68,27 +68,30 @@ def update_peak_elo(fighter, new_elo):
     if new_elo > current_peak:
         peak_elo_ratings[fighter] = round(new_elo, 2)
 
-# Initialize ELO tracking columns
+# --- Initialize ELO Tracking Columns ---
 fights_df["fighter_1_elo_start"] = 0.0
 fights_df["fighter_2_elo_start"] = 0.0
 fights_df["fighter_1_elo_end"] = 0.0
 fights_df["fighter_2_elo_end"] = 0.0
 
-# Process fights
+# --- Process Fights in Chronological Order ---
 for index, fight in fights_df.iterrows():
     f1, f2 = fight["fighter_1"], fight["fighter_2"]
     result = fight["result"]
     
-    # Initialize ratings if needed
+    #Extract event date
+    event_date = fight["event_date"]
+
+    #Initialize ratings if needed
     for fighter in [f1, f2]:
         if fighter not in fighter_ratings:
             fighter_ratings[fighter] = DEFAULT_ELO
     
-    # Record starting ELOs
+    #Record starting ELOs
     fights_df.at[index, "fighter_1_elo_start"] = fighter_ratings[f1]
     fights_df.at[index, "fighter_2_elo_start"] = fighter_ratings[f2]
     
-    # Handle different result types
+    #Handle different result types
     if result == "nc":
         # No ELO changes, just copy start to end
         fights_df.at[index, "fighter_1_elo_end"] = fighter_ratings[f1]
@@ -106,7 +109,7 @@ for index, fight in fights_df.iterrows():
     fights_df.at[index, "fighter_1_elo_end"] = fighter_ratings[f1]
     fights_df.at[index, "fighter_2_elo_end"] = fighter_ratings[f2]
 
-# Generate final rankings
+# --- Generate Final Rankings ---
 elo_df = pd.DataFrame([
     {
         "Fighter": fighter,
@@ -116,10 +119,10 @@ elo_df = pd.DataFrame([
     for fighter, rating in fighter_ratings.items()
 ]).sort_values("Final ELO", ascending=False)
 
-# Save results
+#Ensure `event_date` is in final CSV output
 fights_df.to_csv("ufc_fights_with_elo.csv", index=False)
 elo_df.to_csv("ufc_fighter_rankings.csv", index=False)
 
 print("ELO calculation complete! Files saved:")
-print("- ufc_fights_with_elo.csv")
+print("- ufc_fights_with_elo.csv (Includes event_date)")
 print("- ufc_fighter_rankings.csv")
