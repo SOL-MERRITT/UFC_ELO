@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UFC Fighter Elo Ratings</title>
+    <!-- Local CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Select2 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <!-- jQuery (Select2 dependency) -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- Select2 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h1>UFC Fighter Elo Visualizer</h1>
+
+        <div class="controls">
+            <div>
+                <label for="fighter-select1">Select Fighter 1:</label>
+                <select id="fighter-select1" class="fighter-select" style="width: 300px;">
+                    <option value="">-- Select Fighter --</option>
+                </select>
+            </div>
+            <div>
+                <label for="fighter-select2">Select Fighter 2 (Optional for Comparison):</label>
+                <select id="fighter-select2" class="fighter-select" style="width: 300px;">
+                    <option value="">-- Select Fighter --</option>
+                </select>
+            </div>
+            <button id="view-chart-btn">View Elo Chart</button>
+            <button id="clear-chart-btn">Clear</button>
+        </div>
+
+        <div class="chart-container">
+            <canvas id="eloChart"></canvas>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>

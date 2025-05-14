@@ -1,0 +1,82 @@
+/* Apply overall background and text color */
+body {
+    background-color: #0d1b2a; /* Matches Figure background */
+    color: #e0e1dd; /* Matches Text Color */
+    font-family: sans-serif; /* Choose a suitable font family */
+    margin: 0;
+    padding: 20px;
+}
+
+/* Style headings to be bold */
+h1, h2, h3, h4, h5, h6 {
+    color: #e0e1dd; /* Matches Text Color */
+    font-weight: bold; /* Matches Font Weight for titles/labels */
+}
+
+/* Style a container that might hold the chart or comparison results */
+.comparison-container {
+    background-color: #1b263b; /* Matches Axis background */
+    padding: 20px;
+    border-radius: 8px; /* Optional: Add rounded corners */
+    margin-top: 20px;
+}
+
+/* Style dropdown menus (basic styling) */
+select {
+    background-color: #1b263b; /* Matches Axis background */
+    color: #e0e1dd; /* Matches Text Color */
+    border: 1px solid #e0e1dd; /* Matches Axis Spines/Text Color */
+    padding: 8px;
+    margin-right: 10px;
+    border-radius: 4px;
+}
+
+/* Style the button */
+button {
+    background-color: #00b4d8; /* One of the Line Colors for accent */
+    color: #0d1b2a; /* Dark background for text on the button */
+    font-weight: bold;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+button:hover {
+    background-color: #f77f00; /* The other Line Color on hover */
+}
+
+/* Style for displaying comparison results (example for a table) */
+.comparison-results table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+.comparison-results th,
+.comparison-results td {
+    border: 1px solid #e0e1dd; /* Matches Axis Spines/Text Color */
+    padding: 10px;
+    text-align: left;
+}
+
+.comparison-results th {
+    background-color: #0d1b2a; /* Darker background for table headers */
+    font-weight: bold;
+}
+
+/* You would need more specific CSS to style elements representing the lines and markers if you were recreating the chart visually with HTML/CSS/SVG */
+
+/* Example styling for text that might represent fight history details */
+.fight-history {
+    margin-top: 20px;
+}
+
+.fight-history h3 {
+    margin-bottom: 10px;
+}
+
+.fight-history p {
+    margin-bottom: 5px;
+}
