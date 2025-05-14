@@ -8,7 +8,7 @@ This project scrapes fight data from **UFCStats.com**, calculates **ELO ratings*
 ## **📌 Features**
 ✔ **Web Scraper** – Collects fight history from [UFCStats.com](http://ufcstats.com/)  
 ✔ **ELO Rating System** – Dynamically updates fighter ratings based on wins, losses, and finishes  
-✔ **Current & Peak ELO Leaderboards** – Generates an up-to-date ranking of all UFC fighters ever 
+✔ **Current & Peak ELO Leaderboards** – Generates an up-to-date ranking of all UFC fighters ever  
 ✔ **Fighter ELO Timeline** – Displays the historical progression of a fighter’s ELO rating  
 ✔ **Fighter Comparison** – Plots two fighters' ELO ratings over time on the same graph  
 
