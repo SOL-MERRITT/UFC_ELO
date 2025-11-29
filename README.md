@@ -31,12 +31,30 @@ Process the scraped data and compute **current & peak ELO scores** for all fight
 python UFC_ELO.py
 ```
 ✔ Outputs:
-- `ufc_fights_with_elo.csv` – Fight data including ELO scores  
-- `ufc_fighter_rankings.csv` – **Current and Peak ELO Leaderboards**  
+- `ufc_fights_with_elo.csv` – Fight data including ELO scores
+- `ufc_fighter_rankings.csv` – **Current and Peak ELO Leaderboards**
 
 ---
 
-### **3️⃣ View Fighter’s ELO Timeline**
+### **3️⃣ (Optional) Enrich Fight Data With Stats & Odds**
+Add per-fight striking/grappling totals from UFCStats fight pages and attach closing odds when an **ODDS_API_KEY** (TheOddsAPI) is available.
+```sh
+python fight_data_enrichment.py
+```
+✔ Outputs: `ufc_fights_enriched.csv` – Includes significant strikes, takedowns, control time, and optional closing odds.
+
+---
+
+### **4️⃣ Train a Fight Outcome Model**
+Use the engineered data to train tree-based classifiers (Random Forest, optional XGBoost) that predict whether `fighter_1` wins.
+```sh
+python fight_prediction_model.py --csv ufc_fights_with_elo.csv --output models
+```
+✔ Outputs: Model metrics in the console and serialized pipelines saved under `models/`.
+
+---
+
+### **5️⃣ View Fighter’s ELO Timeline**
 Visualize how a specific fighter’s ELO rating has changed over time.
 ```sh
 python FIGHTER_TIMELINE.py
@@ -46,7 +64,7 @@ python FIGHTER_TIMELINE.py
 
 ---
 
-### **4️⃣ Compare Two Fighters’ ELO Progression**
+### **6️⃣ Compare Two Fighters’ ELO Progression**
 Compare the historical ELO ratings of two fighters on the same graph.
 ```sh
 python compare_fighters.py
@@ -93,7 +111,7 @@ python compare_fighters.py
 ## **🛠️ Dependencies**
 Ensure you have the following Python libraries installed:
 ```
-pip install requests beautifulsoup4 pandas matplotlib datetime
+pip install -r requirements.txt
 ```
 
 ---

@@ -6,6 +6,7 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
 from datetime import datetime
+from typing import Dict, List, Optional
 
 # --- Configuration ---
 
@@ -33,7 +34,7 @@ session.mount("https://", adapter)
 
 # --- Functions ---
 
-def get_page_html(page_number):
+def get_page_html(page_number: int) -> Optional[BeautifulSoup]:
     """Fetch and return a BeautifulSoup object for a given event-list page."""
     url = BASE_URL + str(page_number)
     print(f"[DEBUG] Fetching page {page_number}: {url}")
@@ -45,7 +46,7 @@ def get_page_html(page_number):
         print(f"[ERROR] Error fetching page {page_number}: {e}")
         return None
 
-def scrape_event_links(max_pages=40):
+def scrape_event_links(max_pages: int = 40) -> List[Dict[str, str]]:
     """
     Scrape event links from the event list pages.
     Set max_pages to a small number for testing.
@@ -71,9 +72,10 @@ def scrape_event_links(max_pages=40):
     print(f"[DEBUG] Total events scraped: {len(all_events)}")
     return all_events
 
-def scrape_event_details(event):
+def scrape_event_details(event: Dict[str, str]) -> List[Dict[str, Optional[str]]]:
     """
-    Fetch a single event page and extract its fight details.
+    Fetch a single event page and extract its fight details, including the
+    fight detail URL that can be used to pull deeper stats later.
     Returns a list of fight dictionaries.
     """
     event_name = event["event_name"]
@@ -108,7 +110,7 @@ def scrape_event_details(event):
         if tbody:
             for row in tbody.find_all("tr"):
                 cells = row.find_all("td")
-                if len(cells) < 7:
+                if len(cells) < 10:
                     continue  # Skip rows with incomplete data
                 try:
                     fighter_paragraphs = cells[1].find_all("p")
@@ -124,6 +126,9 @@ def scrape_event_details(event):
                         "method": cells[7].text.strip(),  # Winning method
                         "round": cells[8].text.strip(),
                         "time": cells[9].text.strip(),
+                        # data-link contains the URL to the detailed fight page
+                        "fight_url": row.get("data-link")
+                        or (cells[0].find("a").get("href") if cells[0].find("a") else None),
                     }
                     fights.append(fight_details)
                 except Exception as e:
