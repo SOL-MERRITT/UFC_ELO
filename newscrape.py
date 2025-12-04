@@ -2,6 +2,7 @@ import requests
 from bs4 import BeautifulSoup
 import pandas as pd
 import time
+import os
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
@@ -210,16 +211,40 @@ def scrape_event_fights(event):
 
 def main():
     print("[INFO] Starting scraping process...")
+    
+    csv_filename = "ufc_fights_detailed.csv"
+    existing_events = set()
+    existing_df = None
+
+    if os.path.exists(csv_filename):
+        print(f"[INFO] Found existing file: {csv_filename}")
+        try:
+            existing_df = pd.read_csv(csv_filename)
+            if 'event' in existing_df.columns:
+                existing_events = set(existing_df['event'].unique())
+                print(f"[INFO] Found {len(existing_events)} existing events in CSV.")
+        except Exception as e:
+            print(f"[WARNING] Could not read existing CSV: {e}")
+
     # Use max_pages=2 for a quick test, or a higher number for a full scrape
     events = scrape_event_links(max_pages=40)
     if not events:
         print("[INFO] No events found. Exiting.")
         return
 
+    # Filter out existing events
+    events_to_scrape = [e for e in events if e['event_name'] not in existing_events]
+    
+    if not events_to_scrape:
+        print("[INFO] All found events are already in the CSV. Nothing new to scrape.")
+        return
+
+    print(f"[INFO] Found {len(events_to_scrape)} new events to scrape.")
+
     all_fights_data = []
     with ThreadPoolExecutor(max_workers=5) as executor:
         # We submit the scraping of each event page as a separate job
-        future_to_event = {executor.submit(scrape_event_fights, event): event for event in events}
+        future_to_event = {executor.submit(scrape_event_fights, event): event for event in events_to_scrape}
         for future in as_completed(future_to_event):
             try:
                 fights_from_event = future.result()
@@ -229,14 +254,24 @@ def main():
                 print(f"[ERROR] An event generated an exception: {exc}")
 
     if all_fights_data:
-        df = pd.DataFrame(all_fights_data)
+        new_df = pd.DataFrame(all_fights_data)
         # Reorder columns for readability
         core_cols = ["event", "event_date", "fighter_1", "fighter_2", "result"]
-        stat_cols = sorted([col for col in df.columns if col not in core_cols])
-        df = df[core_cols + stat_cols]
+        stat_cols = sorted([col for col in new_df.columns if col not in core_cols])
+        new_df = new_df[core_cols + stat_cols]
         
-        df.to_csv("ufc_fights_detailed.csv", index=False)
-        print("\n[COMPLETE] Scraping finished! Data saved to 'ufc_fights_detailed.csv'")
+        if existing_df is not None:
+            # Align columns of existing_df to match new_df if necessary, or just concat
+            # Concat will handle matching columns. 
+            # We should prioritize the new structure if it changed, but usually it's additive.
+            final_df = pd.concat([existing_df, new_df], ignore_index=True)
+            print(f"[INFO] Appending {len(new_df)} new rows to existing data.")
+        else:
+            final_df = new_df
+            print(f"[INFO] Creating new dataset with {len(new_df)} rows.")
+        
+        final_df.to_csv(csv_filename, index=False)
+        print(f"\n[COMPLETE] Scraping finished! Data saved to '{csv_filename}'")
     else:
         print("\n[INFO] No fight data was scraped.")
 
